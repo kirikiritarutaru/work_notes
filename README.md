@@ -7,6 +7,4 @@ Personal work notes
 - 大目的
 - 少目的
 - 暫定ゴール
-- 理想
-- 現状
 
