@@ -2,8 +2,7 @@
 
 ## Get started
 
-- 2021-11-11
-- インストール
+### インストール
 
 ```bash
 sudo apt-get remove docker docker-engine docker.io containerd runc
@@ -26,9 +25,8 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 sudo docker run hello-world
 ```
 
----
 
-- 2021-11-13
+
 - 毎回`sudo`をつけるのが面倒
 
 > The docker daemon binds to a Unix socket instead of a TCP port. By  default that Unix socket is owned by the user root and other users can  access it with sudo. For this reason, docker daemon always runs as the  root user.
@@ -49,7 +47,11 @@ sudo systemctl restart docker
 
 - 上記実行後再ログイン
 
-- コンテナ操作一覧
+---
+
+## 基本操作
+
+### コンテナ操作一覧
 
 ```bash
 # 生成済みコンテナ一覧を表示
@@ -109,3 +111,6 @@ RUN pip3 install --upgrade pip
 RUN pip3 install gunicorn
 ```
 
+
+
+---
