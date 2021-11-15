@@ -124,12 +124,12 @@ docker container commit [NAME or UUID] [イメージ名]
 FROM continuumio/miniconda3
 
 # conda create
-RUN conda create -n chemodel python==3.7 
+RUN conda create -n chemodel python==3.7
 
 # install conda package
 SHELL ["conda", "run", "-n", "chemodel", "/bin/bash", "-c"]
 RUN conda install django=3.* -c conda-forge --override-channels
-RUN conda install pytorch==1.7.1 torchvision==0.8.2 torchaudio==0.7.2 cpuonly -c pytorch -c conda-forge -c tboyer --override-channels 
+RUN conda install pytorch==1.7.1 torchvision==0.8.2 torchaudio==0.7.2 cpuonly -c pytorch -c conda-forge -c tboyer --override-channels
 RUN conda install -c rdkit -c conda-forge rdkit --override-channels
 
 # install pip package
@@ -148,17 +148,128 @@ RUN pip3 install gunicorn
     - `RUN`命令はバックスラッシュを使い複数行に分割
     - `RUN apt-get update`と`apt-get install`は常に同じ`RUN`命令文で連結すべき
 
-    
 
-参考URL：https://qiita.com/gold-kou/items/44860fbda1a34a001fc1
+
+[いまさらだけどDockerに入門したので分かりやすくまとめてみた](https://qiita.com/gold-kou/items/44860fbda1a34a001fc1)より引用
 
 ![image.png](https://qiita-user-contents.imgix.net/https%3A%2F%2Fqiita-image-store.s3.amazonaws.com%2F0%2F221948%2Fd10acbd7-0e24-7368-2e07-bcceec665451.png?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&s=ce635ac70d424206facd8a8862f0d0e5)
 
 - build
 
-```sudo
+```bash
 docker image build -t [イメージ名] -f [Dockerfile]
 ```
+
+
+### イメージの構造
+
+- イメージは2つの特徴を持つ
+  1. レイヤー構造になっている
+  2. 一度作成されたイメージは編集不可能
+
+- イメージは一つのミドルウェアのインストールにつき、1レイヤー重なっていくイメージ
+- イメージのレイヤーはRead Only
+- イメージからコンテナを起動した際に作られる「コンテナレイヤー」のみが編集可能
+- コンテナからイメージを生成(commit)した場合に、既存のレイヤーの上に重なってコンテナレイヤーが保存される
+
+`docker run` ：下記の3つを実行するコマンド
+  - `docker pull` :DockerHubからイメージを取得
+  - `docker create` ：取得したイメージからコンテナを作成
+  - `docker start` ：作成したコンテナを起動
+
+```bash
+# 指定したコンテナの詳細情報を表示
+docker inspect [NAME or UUID]
+```
+
+
+
+---
+
+## Dockerにおけるデータ管理
+
+- コンテナ内で扱う動的なデータは、コンテナレイヤーに置くこともできるが、下記の理由で**推奨しない**（使い勝手が悪い）
+  - コンテナが削除された時点で、そのコンテナ内のデータは消える
+  - コンテナ間でデータの共有はできない
+  - コンテナレイヤーへのデータの書き込みは、書き込み速度が遅い
+   - コンテナでは、通常のファイルシステムと異なるユニオンファイルシステムが使われている
+
+- Dockerでは「ホストマシン上にデータを管理し、それをコンテナにマウントする」手法が使われる
+- 手法は主に以下の3つ
+  - volume
+    - ホストマシン上に自動生成される指定ディレクトリをコンテナにマウント
+  - bind mount
+    - ホストマシン上の任意のディレクトリをマウント（ホスト側のディレクトリを直接操作しても良い）
+  - tempfs
+    - ホストマシン上のメモリ領域をコンテナ上にマウント
+
+
+
+### volume
+
+- ホストマシン上で以下を実行することで、volume(`/var/lib/docker/volumes` ディレクトリ)を作成
+```bash
+docker volume create [volumeの名前]
+```
+- コンテナ起動時に`--mount`オプションをつけることで指定したvolumeをマウントすることも可能
+```bash
+docker run -itd --name [作成するコンテナ名] --mount source=[マウントするvolume名],target=[コンテナ上のマウント先ディレクトリ] [イメージ名]
+# 例：
+docker run -itd --name mount-test --mount source=volume1,target=/app nginx
+```
+
+- **マウントしたvolumesディレクトリは、ホスト上のディレクトリから直接操作すべきではない**
+- ホスト内で異なるコンテナを立てている場合、同じvolumeをマウントすることで、コンテナ間でファイルの共有が可能
+
+#### volumeの管理コマンド
+```bash
+# volumeの一覧を表示
+docker volume ls
+# volumeの詳細を確認
+docker volume inspect [volume名]
+# volumeを削除
+docker volume rm [volume名]
+```
+
+- **コンテナを削除してもvolumeは残り続けるので、必要なくなったvolumeは自分で削除する必要あり**
+
+
+
+### bind mount
+
+- **ホスト上の空ディレクトリをコンテナ上の`/usr`などにマウントした場合、コンテナ上のデータが消え、まともに動かなくなることがあるので、注意**
+- volumeのように事前設定する必要はなく、以下のコマンドでコンテナ起動時にオプション指定しマウント
+
+```bash
+docker run -itd --name [コンテナ名] --mount type=bind,source=[マウント元ディレクトリ],target=[マウント先ディレクトリ] [イメージ名]
+# 例:
+docker run -itd —-name bind-mount-test —-mount type=bind,source=“$(pwd)”/mount,target=/app nginx
+```
+
+
+
+### tmpfs
+
+- ホストマシンが終了した場合も、コンテナが終了した場合も、保持していたデータは解放される
+- ホスト上のメモリを無制限に使用してしまう可能性があるので、メモリサイズを制限すべき
+- コンテナ起動時に、`--mount`オプションのtypeにtmpfsを指定することでマウント
+
+```bash
+docker run -itd --name [コンテナ名] --mount type=tmpfs,destination=[マウント先ディレクトリ] [イメージ名]
+# 例:
+docker run -itd --name tmpfs-test --mount type=tmpfs,destination=/app nginx
+```
+
+
+
+---
+
+## Dockerネットワーク
+
+- **複数立ち上げたコンテナ間で通信する手法**について
+
+
+
 
 
 
@@ -170,4 +281,11 @@ docker image build -t [イメージ名] -f [Dockerfile]
 
 - [PyTorch+GPUをDockerで実装](https://qiita.com/conankonnako/items/787b69cd8cbfe7d7cb88)
 - dockerhubにある公式のイメージ：[pytorch/pytorch](https://hub.docker.com/r/pytorch/pytorch)
+
+
+
+参考URL：
+
+- [【図解】Dockerの全体像を理解する -前編-](https://qiita.com/etaroid/items/b1024c7d200a75b992fc)
+- [いまさらだけどDockerに入門したので分かりやすくまとめてみた](https://qiita.com/gold-kou/items/44860fbda1a34a001fc1)
 
