@@ -121,20 +121,79 @@ docker container commit [NAME or UUID] [イメージ名]
   - Dockerfileの例
 
 ```dockerfile
-FROM continuumio/miniconda3
+FROM centos
 
-# conda create
-RUN conda create -n chemodel python==3.7
+MAINTAINER goldkou
 
-# install conda package
-SHELL ["conda", "run", "-n", "chemodel", "/bin/bash", "-c"]
-RUN conda install django=3.* -c conda-forge --override-channels
-RUN conda install pytorch==1.7.1 torchvision==0.8.2 torchaudio==0.7.2 cpuonly -c pytorch -c conda-forge -c tboyer --override-channels
-RUN conda install -c rdkit -c conda-forge rdkit --override-channels
+LABEL title="sampleImage"\
+      version="1.0"\
+      description="This is a sample."
 
-# install pip package
-RUN pip3 install --upgrade pip
-RUN pip3 install gunicorn
+RUN mkdir /myvol
+RUN echo "hello world" > /myvol/greeting
+VOLUME /myvol
+
+ENV hoge=hogehoge
+
+EXPOSE 80
+
+WORKDIR /tmp
+RUN ["pwd"]
+
+ADD https://github.com/docker/cli/blob/master/README.md /tmp
+
+COPY sample.txt /tmp
+```
+
+  - ビルド
+    - `docker image build -f Dockerfile .`
+  - きちんと実行できたか確認
+
+```bash
+#イメージ一覧確認
+docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+<none>              <none>              b4dc0b57f8a8        23 seconds ago      200MB
+
+#コンテナ起動
+docker container run -it -p 8080:80 b4dc0b57f8a8
+
+#/tmpに移動していることを確認
+[root@6ea955b74e97 tmp# pwd
+/tmp
+
+#OSがCentOS最新版であることを確認(上記Step1)
+cat /etc/redhat-release
+CentOS Linux release 7.5.1804 (Core)
+
+#マウントされていることを確認(上記Step4~6)
+cat /myvol/greeting
+hello world
+
+#環境変数確認(上記Step7)
+[root@6ea955b74e97 tmp]# printenv |grep hoge
+hoge=hogehoge
+
+#/tmpにファイルが格納されていることを確認(上記Step11~12)
+[root@6ea955b74e97 tmp]# ls /tmp
+README.md  ks-script-3QMvMi  sample.txt  yum.log
+
+#exitでコンテナを抜ける
+exit
+
+#ポート番号確認(上記Step8)
+docker container ls -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                         PORTS                  NAMES
+6ea955b74e97        b4dc0b57f8a8        "/bin/bash"         24 minutes ago      Up 24 minutes                  0.0.0.0:8080->80/tcp   dazzling_beaver
+
+#メタ情報確認(上記Step3)
+docker image inspect 6ea955b74e97 |grep title
+                "title": "sampleImage",
+docker image inspect 6ea955b74e97 |grep version
+                "org.label-schema.schema-version": "= 1.0     org.label-schema.name=CentOS Base Image     org.label-schema.vendor=CentOS     org.label-schema.license=GPLv2     org.label-schema.build-date=20180531",
+                "version": "1.0"
+docker image inspect 6ea955b74e97 |grep description
+                "description": "This is a sample.",
 ```
 
 - Dockerfile
@@ -148,6 +207,21 @@ RUN pip3 install gunicorn
     - `RUN`命令はバックスラッシュを使い複数行に分割
     - `RUN apt-get update`と`apt-get install`は常に同じ`RUN`命令文で連結すべき
 
+  - 命令一覧
+    - FROM：ベースイメージの指定
+    - MAINTAINER：作成者情報を設定
+    - ENV：環境変数を設定
+    - WORKDIR：場所(ディレクトリ)を移動
+    - USER：ユーザ変更設定
+    - LABEL：メタ情報(バージョンやコメントなど)設定
+    - EXPOSE：公開ポート番号設定
+    - ADD：ファイルやディレクトリを取得（リモート可）
+    - COPY：ファイルやディレクトリを取得（ローカルのみ）
+    - VOLUME：ボリューム設定
+    - ONBUILD：次のbuild時に実行されるコマンドを設定
+    - RUN：ベースイメージから起動したコンテナ内で実行するコマンドを設定
+    - CMD：作成したイメージが起動されたら実行するコマンドを設定
+    - ENTRYPOINT：作成したイメージが起動されたら実行するコマンドを設定
 
 
 [いまさらだけどDockerに入門したので分かりやすくまとめてみた](https://qiita.com/gold-kou/items/44860fbda1a34a001fc1)より引用
