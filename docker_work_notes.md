@@ -123,7 +123,7 @@ docker container commit [NAME or UUID] [イメージ名]
 ```dockerfile
 FROM centos
 
-MAINTAINER goldkou
+MAINTAINER tarutaru
 
 LABEL title="sampleImage"\
       version="1.0"\
