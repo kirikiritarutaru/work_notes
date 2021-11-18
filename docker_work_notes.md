@@ -340,11 +340,48 @@ docker run -itd --name tmpfs-test --mount type=tmpfs,destination=/app nginx
 
 ## Dockerネットワーク
 
+- 一言でいうと
+  - Dockerコンテナの相互通信や、コンテナの外部との通信時に利用するLANのような内部ネットワーク
+  - Dockerコンテナ内から認識できる、ネットワークインターフェースやルーティングの情報は、ホスト上から隔離されている
+
 - **複数立ち上げたコンテナ間で通信する手法**について
 
 
 
+---
 
+## Docker Engine
+
+- 一言でいうと
+  - Dockerのサーバー機能を担うプログラムやライブラリ群で構成される
+    - dockerd
+      - CLIからの命令を受け付けるAPIエンドポイントを持つ
+    - containerd
+      - 内部でのAPI処理を行い、runcのようなコンテナランタイムに委ねる
+    - runc
+      - デフォルトのコンテナランタイム。Linuexカーネルの機能を利用
+
+
+
+---
+
+## Docker CLI
+
+- 一言でいうと
+  - `docker run`や`docker build`など、`docker`から始めるコマンド群で構成されるCLIツール
+  - Docker Engineに対してコンテナやイメージを操作する命令を送信
+
+
+
+---
+
+## Docker Compose
+
+- 一言でいうと
+  - Docker CLIの一つ。複数のDockerのコンテナアプリケーションや、Dockerネットワーク、Dockerボリュームをプロジェクトと呼ぶ単位で管理
+  - YAML形式のファイル単位でプロジェクトを管理
+
+​	
 
 
 ---
