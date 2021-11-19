@@ -353,13 +353,19 @@ docker run -itd --name tmpfs-test --mount type=tmpfs,destination=/app nginx
 ## Docker Engine
 
 - 一言でいうと
+  - Dockerサーバーの中心的な存在。Linux上でDockerをデーモンとして管理する対称全体がDocker Engine。
   - Dockerのサーバー機能を担うプログラムやライブラリ群で構成される
     - dockerd
+      - Dcoker Engineのまとめ役
       - CLIからの命令を受け付けるAPIエンドポイントを持つ
+      - 処理内容をcontainerdに伝える
     - containerd
       - 内部でのAPI処理を行い、runcのようなコンテナランタイムに委ねる
+      - 複数のDockerコンテナやDockerイメージ群を管理する役割
+      - ockerd-shimプロセスを通し、コンテナランタイムを操作する
     - runc
       - デフォルトのコンテナランタイム。Linuexカーネルの機能を利用
+      - 個々のコンテナを隔離したり特別な権限を付与するために、Linuxカーネルと通信する機能を担う
 
 
 
