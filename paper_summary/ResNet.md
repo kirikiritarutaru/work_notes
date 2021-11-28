@@ -1,7 +1,7 @@
 # Deep Residual Learning for Image Recognition
 
 ## 論文について (掲載ジャーナルなど)
-- He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for image recognition. In *Proceedings of the IEEE conference on computer vision and pattern recognition* (pp. 770-778).
+- [He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for image recognition. In *Proceedings of the IEEE conference on computer vision and pattern recognition* (pp. 770-778).](https://arxiv.org/pdf/1512.03385.pdf)
 
 ## 概要
 - 深いニューラルネットワークの学習は困難
@@ -28,7 +28,7 @@
     - どちらも同じ「目的の関数」を漸近的に近似できるが、*学習のしやすさ*が異なる可能性があるのでは！？
   - $y=\mathcal{F}(x,\{W_i\})+x$
     - ここで、 $x$ は入力ベクトル。 $y$ は出力ベクトル。 $\mathcal{F}(x,\{W_i\})$ は residual mapping
-    - 下の図の例だと、$\mathcal{F}=W_2\sigma(W_1x)$ （$\sigma$ はReLU）。
+    - 下の図の例だと、$\mathcal{F}=W_2\sigma(W_1x)$ （$\sigma$ はReLU）（論文の図2より引用）
 
 ![residual block](/home/taru/src/work_notes/paper_summary/picture/residual block.png)
 
