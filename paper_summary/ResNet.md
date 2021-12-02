@@ -97,10 +97,23 @@
 
       - 精度
         - 34層ResNetと比較して、数％ポイントも良い
-
   - CIFAR-10
     - ResNetの層の深さと精度の関係を調査
-
+      - ResNet-20, 32, 44, 56, 110, 1202で実験
+      - 110までは層を深くするほど精度向上
+      - 実装詳細
+        - 重みの減衰：0.0001
+        -  momentum：0.9
+        - 重みの初期化：
+          - [K. He, X. Zhang, S. Ren, and J. Sun. Delving deep into rectifiers: Surpassing human-level performance on magenet classification. In ICCV, 2015.](https://arxiv.org/pdf/1502.01852.pdf)
+        - BNあり
+        - ドロップアウトなし
+        - ミニバッチサイズ：128
+        - データオーグメンテーション：
+          - 各辺に4pixのパディング
+          - パディングされた画像を水平方向の反転し画像増やす
+          - 32×32のクロップをランダムサンプリング
+          - テストではもとの32×32の単一画像のみを評価
 - 物体検知タスクで性能を比較
   - PASCAL
   - MS COCO
@@ -111,6 +124,14 @@
 - SGDのパラメータ、dropoutを使わないという選択、畳み込み層のフィルタのサイズ、層の数はやっぱり職人芸なのかな…
 - ResNetの次元増えるところのスキップ接続の細かいところ、解説記事に書いてないよなぁ。ちゃんと原論文にあたらないと。枝葉だけど
   - 耳年増になるのは避けたいね
+- [weight decayまわりの話](https://twitter.com/icoxfog417/status/931417538407235584?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E931417538407235584%7Ctwgr%5E%7Ctwcon%5Es1_&ref_url=https%3A%2F%2Farakan-pgm-ai.hatenablog.com%2Fentry%2F2018%2F04%2F16%2F100000)
+  - SGDの場合、正則化としてL2正則= weight decayとして使うとうまくいくことが多いよ
+  - weight decay = 0.0001　にしたらいいかな
+  - Adamの場合は正則化として効かないよ
+  - 詳しくは論文読んでね！
+    - 参考：[過学習抑制「Weight Decay」はSGDと相性が良く、Adamと良くない？／NNCで確かめる](https://arakan-pgm-ai.hatenablog.com/entry/2018/04/16/100000)
+      - **自分で確かめよう！！**
+
 
 
 
