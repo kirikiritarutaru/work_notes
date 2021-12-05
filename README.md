@@ -16,11 +16,10 @@
     - Dockerを使った機械学習の環境構築
   - Kaggle
     - デファクトスタンダードになっているモデルの知見の蓄積
-     - EfficientNet
-     - ResNeXt
-     - ViT
-     - Swin Transformer
+      - EfficientNet
+      - ResNet, ResNeXt
+      - ViT
+      - Swin Transformer
     - 周辺コード作成
   - インプットした情報の自分用まとめ
-
 
