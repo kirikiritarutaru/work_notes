@@ -30,7 +30,7 @@
     - ここで、 $x$ は入力ベクトル。 $y$ は出力ベクトル。 $\mathcal{F}(x,\{W_i\})$ は residual mapping
     - 下の図の例だと、$\mathcal{F}=W_2\sigma(W_1x)$ （$\sigma$ はReLU）（論文の図2より引用）
 
-![residual block](/home/taru/src/work_notes/paper_summary/picture/residual block.png)
+<img src="/home/taru/src/work_notes/paper_summary/picture/residual block.png" alt="residual block" style="zoom:150%;" />
 
 - Residual Network
 

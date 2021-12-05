@@ -53,25 +53,57 @@
 
       - 論文4pの左下の脚注に注目．同じ計算になるように$B_1$と$B_2$を恣意的に選ぶんやで．（別パラメータやんけておもたらあかん）
 
-        > 		An informal but descriptive proof is as follows. Note the equality: A1B1 + A2B2 = \[A1, A2][B1; B2] where [ , ] is horizontal concatenation and [ ; ] is vertical concatenation. Let Ai be the weight of the last layer and Bi be the output response of the second-last layer in the block. In the case of C = 2, the element-wise addition in Fig. 3(a) is A1B1 + A2B2, the weight of the last layer in Fig. 3(b) is [A1, A2], and the concatenation of outputs of second-last layers in Fig. 3(b) is [B1; B2].
+        > 				An informal but descriptive proof is as follows. Note the equality: A1B1 + A2B2 = \[A1, A2][B1; B2] where [ , ] is horizontal concatenation and [ ; ] is vertical concatenation. Let Ai be the weight of the last layer and Bi be the output response of the second-last layer in the block. In the case of C = 2, the element-wise addition in Fig. 3(a) is A1B1 + A2B2, the weight of the last layer in Fig. 3(b) is [A1, A2], and the concatenation of outputs of second-last layers in Fig. 3(b) is [B1; B2].
 
-    - ブロックのパラメータ数
+- ResNet の bottleneck block と ResNeXt の block のパラメータ数の比較
 
-      - $C ·(256 ·d + 3 ·3 ·d ·d + d ·256) $
-        - ここで，Cはカーディナリティ，dはボトルネックのチャンネル数
-        - 入力のチャンネル数256，ボトルネックのカーネルサイズ3×3の場合
+  - 論文図1を引用
+  - <img src="/home/taru/src/work_notes/paper_summary/picture/ResNetのボトルネックブロックとResNeXtのブロック.png" alt="ResNetのボトルネックブロックとResNeXtのブロック" style="zoom: 150%;" />
+  - 条件
+    - 入力 256 ch、出力 256 ch、Convのカーネルサイズ $3\times3$とする
+  - ResNet の bottleneck blockのパラメータ数
+    - $69632= 256\times64 + 64\times(3\times3)\times64 + 64\times256$
+  - ResNeXt の block のパラメータ数
+    - 式：$C ·(256\times d + d\times(3\times3)\times d + d \times256) $
+
+      - ここで，$C$はカーディナリティ，$d$はボトルネックのチャンネル数
+    - $70144=32\times(256\times4+4\times(3\times3)\times4+4\times256)$　
+      - カーディナリティ$=32$、ボトルネックのチャンネル数$=4$の場合
+
 
   
 
 ## 主張の有効性の検証方法
 
-- ImageNet-1Kで同じくらいのパラメータ数のResNetとResNeXtを比較．ResNeXtのほうが1％ポイントぐらいよき
+- 画像認識
+  - 複数データセットでResNextの精度を確認
+    - ImageNet-1K, 5K
+    - CIFAR-10, 100
+
+  - 結果： ResNeXt > ResNet （実験ごとに層数は異なるよ）
+    - **カーディナリティを増やすと精度向上**の傾向
+      - 層数増やしても精度良くなるけどカーディナリティ増やすほうがよい傾向
+
+- 物体検知
+  - COCO minival
+    - 
+
 
 ## 批評
 
-- 
+- ニューラルネットの理論計算量
+  - 「一つの入力データに対して適用される浮動小数点演算の回数」
+    - ただし、メモリ転送量およびNNの推論最適化の影響は無視するとする
+
+  - 参考：[Chainerで書いたニューラルネットの理論計算量を推定するchainer_computational_cost](https://daily.belltail.jp/?p=2537#hs_b13c81e1d93e8b709d82152347459f21_footnote_1)
+
+- （ResNet-50とResNeXt-50のパラメータ数と計算量いうほど同程度なんやろか…？感覚がわからん）
 
 ## 次に読むべき論文
 
 - Grouped Convolution
   - [Krizhevsky, A., Sutskever, I., & Hinton, G. E. (2012). Imagenet classification with deep convolutional neural networks. *Advances in neural information processing systems*, *25*, 1097-1105.](https://proceedings.neurips.cc/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf)
+- Faster R-CNN
+  - [Ren, S., He, K., Girshick, R., & Sun, J. (2016). Faster R-CNN:  towards real-time object detection with region proposal networks. *IEEE transactions on pattern analysis and machine intelligence*, *39*(6), 1137-1149.](https://arxiv.org/pdf/1506.01497.pdf)
+- Batch Normalization
+  - [Ioffe, S., & Szegedy, C. (2015, June). Batch normalization:  Accelerating deep network training by reducing internal covariate shift. In *International conference on machine learning* (pp. 448-456). PMLR.](https://arxiv.org/pdf/1502.03167.pdf)
