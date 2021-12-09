@@ -11,7 +11,14 @@
 
 
 ## 問題設定と解決したこと
-- 
+- 各最適化手法の包含関係を定め、関係を明らかにした。
+  - ここで、「包含関係」とは「ある最適化手法Aを他の最適化手法Bで近似的にシミュレートできる場合、$A\subseteq B$ と書く」
+
+- 各最適化手法の包含関係
+  - $\text{SGD} \subseteq \text{MOMENTUM} \subseteq \text{RMSPROP}$
+  - $\text{SGD} \subseteq \text{MOMENTUM} \subseteq \text{ADAM}$
+  - $\text{SGD} \subseteq \text{NESTEROV} \subseteq \text{NADAM}$
+
 
 ## 何をどう使ったのか
 - 
