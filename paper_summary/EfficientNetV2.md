@@ -35,17 +35,48 @@
      - 解決策：DwC を使っているMBConvブロックを、DwCを使っていない Fused-MBConvブロックに置き換える
   3. EfficientNetの各ステージで均等にスケールアップする手法は最適ではない
      - 解決策：非一様なスケーリング戦略（後ろのステージの層を徐々にに追加していく）を採用
+- Depth-wise convolutionについて
+  - [参考](https://www.robotech-note.com/entry/2017/12/27/084952)
+  - 1チャンネルに一つのフィルタが対応して畳み込み
+  - チャンネルごとに独立して畳み込みし、入力と出力のチャンネル数は変化しない
+
 - Fused-MBConv ブロックについて
-  - 
+  - depthwise convolution 3×3 と convolution 1×1にわかれていたものを convolution 3×3 に置き換える
+    - 最初の方の層をFused-MBConvに置き換えることで、パラメータとFLOPｓのオーバヘッドを小さくして、学習速度を向上
+    - 深い層ではDwCのが効果的（らしい）
+
+  - 図中のSE：[Squeeze-and-Excitationモジュール ( SENet より )](https://openaccess.thecvf.com/content_cvpr_2018/papers/Hu_Squeeze-and-Excitation_Networks_CVPR_2018_paper.pdf)（←これ論文内で言及ないけどそんなありふれているか…？）
+
+
+![Fused-MBConv](/home/taru/src/work_notes/paper_summary/picture/Fused-MBConv.png)
+
+- Progressive learning について
+  - TODO：かく
+
+
 
 ## 主張の有効性の検証方法
 
-- ImageNet/ 
+- ImageNetでSOTA
+- ImageNet21kでもSOTA
+  - 学習画像13M、クラス数21841というどれかデータセット
+  - 学習速度がくっっっっそ早いEfficientNetV2はImageNet21kでも問題なく学習できる
+    - 他のモデルには無理ですよねというｲｷﾘ
+
 
 ## 批評
 
-- 
+- （ImageNetに過剰適合してませんか？？）
+  - でもKaggleで採用率高いから有能なのかも？
+  - 学習が早いから実験のイテレーション回しやすくて採用している人が多いのかもしれない…
+
 
 ## 次に読むべき論文
 
 - [EfficientNetV1](https://arxiv.org/abs/1905.11946)
+- [SENet](https://openaccess.thecvf.com/content_cvpr_2018/papers/Hu_Squeeze-and-Excitation_Networks_CVPR_2018_paper.pdf)
+  - ![squeeze-and-Excitation block](/home/taru/src/work_notes/paper_summary/picture/squeeze-and-Excitation block.png)
+  - [MobileNet(v1,v2,v3)を簡単に解説してみた](https://qiita.com/omiita/items/77dadd5a7b16a104df83)（チャネル方向のself-attentionとも言えるな！）
+    1. 各チャネルの代表値をGlobal Average Pooling 2D でとる
+    2. とった代表値を全結合層に入れて各チャネルの重みを計算
+    3. 計算した重みをもともとのinputと掛け合わせる
