@@ -51,9 +51,21 @@
 ![Fused-MBConv](/home/taru/src/work_notes/paper_summary/picture/Fused-MBConv.png)
 
 - Progressive learning について
-  - TODO：かく
+  - 学習をステージごとにわけてステージが進むごとに正則化を強くする![progressive learning example](/home/taru/src/work_notes/paper_summary/picture/progressive learning example.png)
+  - *正則化*とは？
+    1. **Dropout**
+       - ランダムにチャンネルをドロップすることで *co-adaptation* を抑える
+    2. **RandAugment**
+       - 画像ごとのデータオーグメンテーション
+         - 14種類のデータ拡張操作からランダムに$N$個選び、それぞれを強さ$M$で順番に適用する方法
+    3. **Mixup**
+       - クロスイメージデータオーグメンテーション
+       - 2枚の画像とそのラベル $(x_i, y_i), (x_j, y_j)$ を混合比 $\lambda$ でミックス
+         - $\hat x_i  = \lambda x_j + (1-\lambda) x_i, \ \hat y_i = \lambda y_j + (1-\lambda)y_i$
+  - アルゴリズムは以下の通り
+    - （スタートとゴールの強度を決めて、ステージごとにだんだん正則化を強くかけていくという意味でしかないな…）
 
-
+![Progressive learning algorithm](/home/taru/src/work_notes/paper_summary/picture/Progressive learning algorithm.png)
 
 ## 主張の有効性の検証方法
 
@@ -74,9 +86,18 @@
 ## 次に読むべき論文
 
 - [EfficientNetV1](https://arxiv.org/abs/1905.11946)
+
 - [SENet](https://openaccess.thecvf.com/content_cvpr_2018/papers/Hu_Squeeze-and-Excitation_Networks_CVPR_2018_paper.pdf)
   - ![squeeze-and-Excitation block](/home/taru/src/work_notes/paper_summary/picture/squeeze-and-Excitation block.png)
   - [MobileNet(v1,v2,v3)を簡単に解説してみた](https://qiita.com/omiita/items/77dadd5a7b16a104df83)（チャネル方向のself-attentionとも言えるな！）
     1. 各チャネルの代表値をGlobal Average Pooling 2D でとる
     2. とった代表値を全結合層に入れて各チャネルの重みを計算
     3. 計算した重みをもともとのinputと掛け合わせる
+
+- [RandAugment](https://arxiv.org/abs/1909.13719)
+
+  - Cubuk, E. D., Zoph, B., Shlens, J.,  & Le, Q. V. (2020). Randaugment: Practical automated data  augmentation with a reduced search space. In *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops* (pp. 702-703).
+
+  - [【論文読解】RandAugment: Practical automated data augmentation with a reduced search space](https://qiita.com/takoroy/items/e2f1ee627311be5d879d)
+
+    
