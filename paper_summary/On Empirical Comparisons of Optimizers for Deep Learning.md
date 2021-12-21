@@ -24,7 +24,14 @@
 - 
 
 ## 主張の有効性の検証方法
-- 
+- パラメータの探索範囲（上の段は探索範囲、下の段はプロット用の探索範囲）
+- $\varepsilon$や$\beta$も広い範囲を探索しないとだめっぽい
+  - ResNet-32 on CIFAR-10
+    - ![ResNet-32 on CIFAR-10 searchspace](/home/taru/src/work_notes/paper_summary/picture/ResNet-32 on CIFAR-10 searchspace.png)
+  - ResNet-50 on ImageNet
+    - ![ResNet-50 on ImageNet search space](/home/taru/src/work_notes/paper_summary/picture/ResNet-50 on ImageNet search space.png)
+      - weight decay!?
+      - TODO:fの正体、文字が微妙にことなるのはなぜ？
 
 ## 批評
 - Conclusions より引用（内容を要約して抜粋）
