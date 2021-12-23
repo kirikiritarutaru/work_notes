@@ -115,10 +115,27 @@
           - 32×32のクロップをランダムサンプリング
           - テストではもとの32×32の単一画像のみを評価
 - 物体検知タスクで性能を比較
-  - PASCAL
-  - MS COCO
+  - タスク
+    - PASCAL
+    - MS COCO
+      - COCO 2015 で the 1st place
+  - Faster R-CNNのバックボーンにResNet-101を使い、工夫を3つ (box refinement, context, multi-scale testing) 加えたモデルで大体SOTA
+    - box refinement
+      - S. Gidaris and N. Komodakis. Object detection via a multi-region & semantic segmentation-aware cnn model. In ICCV, 2015. の論文で提案
+      - Faster R-CNNでは、最終的な出力は提案ボックスとは異なる回帰されたボックス
+      - 推論のために、回帰されたボックスから新しい特徴を抽出し、新しく分類スコアと回帰されたボックスを得る
+      - 300個の予測値ともとの300個の予測値をアンサンブル
+      - 新しい予測ボックスを収斂し、多数決
+    - Global context
+      - 画像全体のバウンディングボックスを使用して[ピラミッドプーリング](https://arxiv.org/abs/1406.4729)により特徴を抽出し、グローバルコンテキスト特徴量を得る
+      - もとの領域ごとの特徴と連結して、新しく分類スコアと回帰ボックスを得る
+    - multi-scale testing
+      - 特徴ピラミッドから、隣接する2つのスケールを選択
+      - RoIプーリングとその後のレイヤーを2つのスケールの特徴マップに実行
+      - maxout レイヤーにより統合
+      - 詳しくは[S. Ren, K. He, R. Girshick, X. Zhang, and J. Sun. Object detection networks on convolutional feature maps. arXiv:1504.06066, 2015.](https://arxiv.org/abs/1504.06066)を読んでね
 
-
+​	
 
 ## 批評
 - SGDのパラメータ、dropoutを使わないという選択、畳み込み層のフィルタのサイズ、層の数はやっぱり職人芸なのかな…
@@ -131,6 +148,11 @@
   - 詳しくは論文読んでね！
     - 参考：[過学習抑制「Weight Decay」はSGDと相性が良く、Adamと良くない？／NNCで確かめる](https://arakan-pgm-ai.hatenablog.com/entry/2018/04/16/100000)
       - **自分で確かめよう！！**
+- 物体検知タスクの方、いろんな論文の工夫をアドホックに組み合わせたんですか？
+  - 工夫による精度向上が、VGG-16→ResNet-101に変更したときの精度向上よりも大きいですが…
+  - ResNet自体の性能へのコントリビューションを調べるという意味では疑問符が付きますね
+  - まぁ、ResNetが物体検知で強いのを示すというよりも一位とるために様々な工夫を凝らしましたということなのかな
+
 
 
 
