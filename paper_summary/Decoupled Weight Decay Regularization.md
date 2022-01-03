@@ -69,12 +69,11 @@
       - コスト関数$C$の**中**で重み$w$を調整するのが$L_2$正則化
       - コスト関数$C$の**外**で重み$w$を調整するのがwight decay
 
-
-
 ## 何をどう使ったのか
 - main contribution
   - 勾配ベースの更新から weight decay を切り離すことで、Adamの正則化を改善したこと
   - 包括的な分析により、$L_2$ 正則化よりもdecoupled weight decay （非結合型の重み減衰）を使うことでAdamの汎化性能が大幅に向上したことを示したこと
+  - ![AdamW algorithm](/home/taru/src/work_notes/paper_summary/picture/AdamW algorithm.png)
 
 
 ## 主張の有効性の検証方法
