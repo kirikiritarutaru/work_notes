@@ -53,7 +53,7 @@
 
       - 論文4pの左下の脚注に注目．同じ計算になるように$B_1$と$B_2$を恣意的に選ぶんやで．（別パラメータやんけておもたらあかん）
 
-        > 				An informal but descriptive proof is as follows. Note the equality: A1B1 + A2B2 = \[A1, A2][B1; B2] where [ , ] is horizontal concatenation and [ ; ] is vertical concatenation. Let Ai be the weight of the last layer and Bi be the output response of the second-last layer in the block. In the case of C = 2, the element-wise addition in Fig. 3(a) is A1B1 + A2B2, the weight of the last layer in Fig. 3(b) is [A1, A2], and the concatenation of outputs of second-last layers in Fig. 3(b) is [B1; B2].
+        > An informal but descriptive proof is as follows. Note the equality: A1B1 + A2B2 = \[A1, A2][B1; B2] where [ , ] is horizontal concatenation and [ ; ] is vertical concatenation. Let Ai be the weight of the last layer and Bi be the output response of the second-last layer in the block. In the case of C = 2, the element-wise addition in Fig. 3(a) is A1B1 + A2B2, the weight of the last layer in Fig. 3(b) is [A1, A2], and the concatenation of outputs of second-last layers in Fig. 3(b) is [B1; B2].
 
 - ResNet の bottleneck block と ResNeXt の block のパラメータ数の比較
 
@@ -71,7 +71,7 @@
       - カーディナリティ$=32$、ボトルネックのチャンネル数$=4$の場合
 
 
-  
+
 
 ## 主張の有効性の検証方法
 
@@ -79,14 +79,19 @@
   - 複数データセットでResNextの精度を確認
     - ImageNet-1K, 5K
     - CIFAR-10, 100
-
+      - 8GPUで128ミニバッチ
+      - momentum SGDでweight decayあり、段階的にlearning rateを減少
+      - 300 epoch
   - 結果： ResNeXt > ResNet （実験ごとに層数は異なるよ）
     - **カーディナリティを増やすと精度向上**の傾向
       - 層数増やしても精度良くなるけどカーディナリティ増やすほうがよい傾向
-
 - 物体検知
   - COCO minival
-    - 
+    - Faster R-CNNのバックグラウンドのネットワークとしてResNeXtを適用SOTA
+      - ImageNet-1Kで事前学習
+      - 8GPUで128ミニバッチ（←クソデカ）
+      - momentum SGDでweight decayあり段階的にlearning rateを減少
+        - やっぱSOTAだそうとしたらmomentum SGDでゆっくり学習かー
 
 
 ## 批評
