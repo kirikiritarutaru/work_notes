@@ -14,7 +14,6 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o 
 
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
-
 ```
 
 
@@ -210,6 +209,7 @@ docker image inspect 6ea955b74e97 |grep description
   - 命令一覧
     - FROM：ベースイメージの指定
     - MAINTAINER：作成者情報を設定
+        - ベストプラクティスいわく非推奨→LABELを使うほうが良いとのこと
     - ENV：環境変数を設定
     - WORKDIR：場所(ディレクトリ)を移動
     - USER：ユーザ変更設定
@@ -281,8 +281,6 @@ docker inspect [NAME or UUID]
   
 
 - いったんコンテナが起動すれば、コンテナ用のプロセス空間内からアクセス可能なファイルシステムでは、Dockerコンテナ用のイメージレイヤかvolumeか見分けがつかない
-
-- 
 
 
 
@@ -417,7 +415,33 @@ docker run -itd --name tmpfs-test --mount type=tmpfs,destination=/app nginx
 - [PyTorch+GPUをDockerで実装](https://qiita.com/conankonnako/items/787b69cd8cbfe7d7cb88)
 - dockerhubにある公式のイメージ：[pytorch/pytorch](https://hub.docker.com/r/pytorch/pytorch)
 
+### Dockerのdefault runtimeをnvidiaに変更
 
+-   参考:
+
+    -   [dockerのdefault runtimeをnvidia(GPUが使えるruntime)にする](https://qiita.com/tsota/items/59948952591fd4a443be)
+
+        -   `/etc/docker/daemon.json`に`"default-runtime": "nvidia"`を加えてサービス再起動
+
+        -   ```sh
+            # vi /etc/docker/daemon.json
+            # cat /etc/docker/daemon.json 
+            {
+                "default-runtime": "nvidia",  # <-追加
+                "runtimes": {
+                    "nvidia": {
+                        "path": "nvidia-container-runtime",
+                        "runtimeArgs": []
+                    }
+                }
+            }
+            # systemctl restart docker
+            # docker info 2> /dev/null | grep -i runtime
+            Runtimes: nvidia runc
+            Default Runtime: nvidia
+            ```
+
+            
 
 参考URL：
 
