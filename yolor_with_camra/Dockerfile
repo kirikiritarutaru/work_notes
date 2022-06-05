@@ -22,6 +22,7 @@ RUN git clone https://github.com/JunnYu/mish-cuda
 
 WORKDIR /workspace/src/yolor
 RUN gdown 'https://drive.google.com/u/0/uc?id=1Tdn3yqpZ79X7R1Ql0zNlNScB1Dv9Fp76'
+RUN gdown 'https://drive.google.com/u/0/uc?id=1UflcHlN5ERPdhahMivQYCbWWw7d2wY7U'
 
 WORKDIR /workspace/src/pytorch_wavelets
 RUN pip install .
