@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  yolor_example:
+    image: yolor_camera
+    container_name: yolor_example
+    runtime: nvidia
+    tty: true
+    stdin_open: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    devices:
+      - /dev/video0:/dev/video0

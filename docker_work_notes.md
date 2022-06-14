@@ -195,45 +195,50 @@ docker image inspect 6ea955b74e97 |grep description
                 "description": "This is a sample.",
 ```
 
-- Dockerfile
+### Dockerfile
 
-  - 一言でいうと、「コンテナの構成情報を定義したファイル」
+- 一言でいうと、「コンテナの構成情報を定義したファイル」
 
-  - Dockerfileを用意すれば何回もDockerコマンドを叩く必要なく、1コマンドでDockerイメージを生成できる
+- Dockerfileを用意すれば何回もDockerコマンドを叩く必要なく、1コマンドでDockerイメージを生成できる
 
-  - [Dockerfileのベストプラクティス](http://docs.docker.jp/engine/articles/dockerfile_best-practice.html)
+- [Dockerfileのベストプラクティス](http://docs.docker.jp/engine/articles/dockerfile_best-practice.html)
 
-    - `RUN`命令はバックスラッシュを使い複数行に分割
-    - `RUN apt-get update`と`apt-get install`は常に同じ`RUN`命令文で連結すべき
+  - `RUN`命令はバックスラッシュを使い複数行に分割
+  - `RUN apt-get update`と`apt-get install`は常に同じ`RUN`命令文で連結すべき
 
-  - 命令一覧
-    - FROM：ベースイメージの指定
-    - MAINTAINER：作成者情報を設定
-        - ベストプラクティスいわく非推奨→LABELを使うほうが良いとのこと
-    - ENV：環境変数を設定
-    - WORKDIR：場所(ディレクトリ)を移動
-    - USER：ユーザ変更設定
-    - LABEL：メタ情報(バージョンやコメントなど)設定
-    - EXPOSE：公開ポート番号設定
-    - ADD：ファイルやディレクトリを取得（リモート可）
-    - COPY：ファイルやディレクトリを取得（ローカルのみ）
-    - VOLUME：ボリューム設定
-    - ONBUILD：次のbuild時に実行されるコマンドを設定
-    - RUN：ベースイメージから起動したコンテナ内で実行するコマンドを設定
-    - CMD：作成したイメージが起動されたら実行するコマンドを設定
-    - ENTRYPOINT：作成したイメージが起動されたら実行するコマンドを設定
+- 命令一覧
+  - FROM：ベースイメージの指定
+  - MAINTAINER：作成者情報を設定
+      - ベストプラクティスいわく非推奨→LABELを使うほうが良いとのこと
+  - ENV：環境変数を設定
+  - WORKDIR：場所(ディレクトリ)を移動
+  - USER：ユーザ変更設定
+  - LABEL：メタ情報(バージョンやコメントなど)設定
+  - EXPOSE：公開ポート番号設定
+  - ADD：ファイルやディレクトリを取得（リモート可）
+  - COPY：ファイルやディレクトリを取得（ローカルのみ）
+  - VOLUME：ボリューム設定
+  - ONBUILD：次のbuild時に実行されるコマンドを設定
+  - RUN：ベースイメージから起動したコンテナ内で実行するコマンドを設定
+  - CMD：作成したイメージが起動されたら実行するコマンドを設定
+  - ENTRYPOINT：作成したイメージが起動されたら実行するコマンドを設定
 
 
 [いまさらだけどDockerに入門したので分かりやすくまとめてみた](https://qiita.com/gold-kou/items/44860fbda1a34a001fc1)より引用
 
 ![image.png](https://qiita-user-contents.imgix.net/https%3A%2F%2Fqiita-image-store.s3.amazonaws.com%2F0%2F221948%2Fd10acbd7-0e24-7368-2e07-bcceec665451.png?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&s=ce635ac70d424206facd8a8862f0d0e5)
 
-- build
+### build
 
 ```bash
-docker image build -t [イメージ名] -f [Dockerfile]
+docker image build -rm -t [イメージ名] --build-arg HTTP_PROXY=${HTTP_PROXY} -f [Dockerfile]
 ```
 
+-   `--tag, -t`: 名前と、オプションでタグを`名前:タグ`の形式で指定
+-   `--file, -f`: Dockerfileの名前
+-   `--rm`: 構築に成功後、中間コンテナを削除
+-   `--pull`: イメージは、常に新しいバージョンのダウンロードを試みる
+-   `--build-arg`: ビルド中にだけ設定する環境変数の指定
 
 ### イメージの構造
 
@@ -402,8 +407,66 @@ docker run -itd --name tmpfs-test --mount type=tmpfs,destination=/app nginx
 - 一言でいうと
   - Docker CLIの一つ。複数のDockerのコンテナアプリケーションや、Dockerネットワーク、Dockerボリュームをプロジェクトと呼ぶ単位で管理
   - YAML形式のファイル単位でプロジェクトを管理
+- コマンド
+    - `docker compose up`: コンテナの作成と開始
 
-​	
+
+### `compose.yaml`の例
+
+```yaml
+version: '3.9'
+services:
+	sample:
+	image: sample_image
+	build: 
+	  context: .
+      # ビルド中にプロキシを使うための設定
+      args:
+        - HTTP_PROXY=$HTTP_PROXY
+        - http_proxy=$http_proxy
+        - HTTPS_PROXY=$HTTPS_PROXY
+        - https_proxy=$https_proxy
+        - FTP_PROXY=$FTP_PROXY
+        - ftp_proxy=$ftp_proxy
+        - NO_PROXY=$NO_PROXY
+        - no_proxy=$no_proxy
+	conteiner_name: sample
+	runtime: nvidia
+	environment:
+		- DISPLAY=${DISPLAY}
+		- QT_X11_NO_MITSHM=1
+		# プロキシ設定
+		- HTTP_PROXY=$HTTP_PROXY
+      	- http_proxy=$http_proxy
+      	- HTTPS_PROXY=$HTTPS_PROXY
+      	- https_proxy=$https_proxy
+      	- FTP_PROXY=$FTP_PROXY
+      	- ftp_proxy=$ftp_proxy
+      	- NO_PROXY=$NO_PROXY
+      	- no_proxy=$no_proxy
+    tty: true
+    stdin_open: true
+	volumes:
+		- $PWD:/workspace
+		- /tmp/.X11-unix:/tmp/.X11-unix
+```
+
+-   `version`: docker composeで使用するバージョンの定義。ころころ変わるので[公式ドキュメント](https://docs.docker.com/compose/compose-file/)を要確認
+-   `services`: アプリケーションを動かすための各要素を記述するところ
+-   `build`: ComposeFileを実行し、ビルドされるときのパス
+-   `runtime`: サービスのコンテナに使用するランタイム
+    -   `nvidia`を指定するには`nvidia-docker2`が必要
+        -   [注意]状況がよく変わるので、要確認
+-   `volumes`: マウントするディレクトリのパス
+    -   `/tmp/.X11-unix:/tmp/.X11-unix`はGUIアプリをホスト側に表示する時に必要な設定
+-   `environment`: 環境変数設定
+    -   `DISPLAY=${DISPLAY}`はGUIアプリをホスト側に表示する時に必要な設定
+-   `devices`: デバイスマッピングの一覧
+    -   `/dev/video0:/dev/video0`: webカメラ使用時の指定方法
+-   `tty`: 疑似端末（キーボードによる入力）をコンテナに結びつける設定
+    -   `docker run -it <container_name>`の**-t**にあたる設定
+-   `stdin_open`: 標準入出力とエラー出力をコンテナに結びつける設定
+    -   `docker run -it <container_name>`の**-i**にあたる設定
 
 
 ---
