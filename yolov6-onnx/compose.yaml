@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  yolov6_onnx:
+    image: yolov6_onnx
+    container_name: yolov6_onnx
+    runtime: nvidia
+    tty: true
+    stdin_open: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./models:/workspace/src/ONNX-YOLOv6-Object-Detection/models
+    devices:
+      - /dev/video0:/dev/video0

@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+yolov6-onnx/models/yolov6n.onnx
+yolov6-onnx/models/yolov6s.onnx
