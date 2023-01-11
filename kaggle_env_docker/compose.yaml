@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  kaggle_env:
+    image: rapidsai/rapidsai:22.12-cuda11.4-runtime-ubuntu20.04-py3.9
+    container_name: kaggle_env
+    runtime: nvidia
+    tty: true
+    stdin_open: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ~/src/kaggle:/home/kaggle
