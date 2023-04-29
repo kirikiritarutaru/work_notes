@@ -1,0 +1,13 @@
+version: '3.9'
+services:
+  sam_example:
+    image: sam_example
+    container_name: sam_example
+    runtime: nvidia
+    tty: true
+    stdin_open: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
