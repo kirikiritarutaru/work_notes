@@ -1,0 +1,29 @@
+FROM pytorch/pytorch:1.10.0-cuda11.3-cudnn8-runtime
+
+WORKDIR /workspace
+
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    vim \
+    libgl1-mesa-dev \
+    libglib2.0-0 \
+    libsm6 \
+    libxrender1 \
+    libxext6 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip && \
+    pip install \
+    numpy \
+    matplotlib \
+    opencv-python \
+    openmim \
+    ftfy \
+    regex
+
+RUN mim install mmcv
+
+RUN git clone https://github.com/open-mmlab/mmsegmentation.git /workspace/mmsegmentation
+WORKDIR /workspace/mmsegmentation
+RUN pip install -e .
