@@ -1,0 +1,44 @@
+# ベースイメージとしてCUDA 11.8を含むUbuntu 22.04を使用
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+
+# 必要なパッケージをインストール
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    vim \
+    wget \
+    python3 \
+    python3-pip \
+    python3-dev \
+    build-essential \
+    cmake \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# pipを最新バージョンにアップグレード
+RUN pip3 install --upgrade pip
+
+# CUDAサポート付きのPyTorchをインストール
+RUN pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+
+# SAM 2リポジトリをクローン
+RUN git clone https://github.com/facebookresearch/sam2.git
+
+# 作業ディレクトリを設定
+WORKDIR /sam2
+
+# SAM 2をインストール
+RUN pip3 install -e .
+
+# ノートブックのために追加の依存関係をインストール
+RUN pip3 install -e ".[notebooks]"
+
+# チェックポイントをダウンロード
+RUN chmod +x checkpoints/download_ckpts.sh && \
+    cd checkpoints && \
+    ./download_ckpts.sh
+
+# コンテナ起動時のデフォルトコマンド
+CMD ["/bin/bash"]
