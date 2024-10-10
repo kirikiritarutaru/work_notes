@@ -1,0 +1,37 @@
+# FROM nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04
+FROM pytorch/pytorch:1.13.1-cuda11.6-cudnn8-runtime
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # python3-pip \
+    git \
+    curl \
+    vim \
+    wget \
+    ninja-build \
+    gcc-8 \
+    g++-8 \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CC=gcc-8
+ENV CXX=g++-8
+
+# 必要なPythonパッケージをインストール（PyTorch + Torchvision）
+# RUN pip3 install torch==1.13.1 torchvision==0.14.1 --extra-index-url https://download.pytorch.org/whl/cu113
+
+# Detectron2のカスタムバージョンをインストール
+RUN git clone https://github.com/MaureenZOU/detectron2-xyz.git /workspace/detectron2-xyz
+WORKDIR /workspace/detectron2-xyz
+RUN python3 -m pip install .
+
+# Panoptic APIをインストール
+RUN git clone https://github.com/cocodataset/panopticapi.git /workspace/panopticapi
+WORKDIR /workspace/panopticapi
+RUN pip3 install .
+
+# DINOvのリポジトリをクローン
+RUN git clone https://github.com/UX-Decoder/DINOv /workspace/DINOv
+
+# DINOvディレクトリに移動し、依存関係をインストール
+WORKDIR /workspace/DINOv
+RUN pip3 install -r requirements.txt
+
