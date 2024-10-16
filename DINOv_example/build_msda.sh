@@ -1,1 +1,2 @@
-bash /workspace/Deformable-DETR/models/ops/make.sh
+cd /workspace/Deformable-DETR/models/ops
+sh ./make.sh
